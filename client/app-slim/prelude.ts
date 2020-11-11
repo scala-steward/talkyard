@@ -584,12 +584,12 @@ export function $bySelector(selector: string, elem?): NodeListOf<Element> {   //
   return (elem || document).querySelectorAll(selector);
 }
 
-export function $first(selector: string, elem?): HTMLElement {
+export function $first(selector: string, elem?): HTMLElement | Nl {
   const elems = (elem || document).querySelectorAll(selector);
   return <HTMLElement> (elems.length ? elems[0] : null);
 }
 
-export function $byId(elemId: string): HTMLElement {
+export function $byId(elemId: string): HTMLElement | Nl {
   // @ifdef DEBUG
   dieIf(/#\., /.test(elemId), 'EdE2KWWE45');
   // @endif

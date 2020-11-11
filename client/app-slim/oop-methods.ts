@@ -1298,6 +1298,10 @@ export function page_isClosedNotDone(page: Page): boolean {
   return page.pageClosedAtMs && !page.pageAnswerPostUniqueId && !page.pageDoneAtMs
 }
 
+export function page_isOpen(page: Page): Bo {
+  return !page.pageClosedAtMs && !page.pageAnswerPostUniqueId && !page.pageDoneAtMs
+}
+
 export function page_hasDoingStatus(page: Page): boolean {
   const pageType = page.pageRole;
   return pageType === PageRole.Problem || pageType === PageRole.Idea ||

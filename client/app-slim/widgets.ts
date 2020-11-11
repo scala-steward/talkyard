@@ -361,6 +361,38 @@ export function UserName(props: {
 }
 
 
+export interface InstaDiagProps {
+  diagClassName?: St;
+  titleClassName?: St;
+  title?: RElm | St;
+  body: RElm | St;
+  footer?: RElm | St;
+}
+
+
+
+/// A modal dialog that pops up instantly. Works also before React-Bootstrap loaded.
+///
+/// React-Bootsrap's Modal, ModalBody etc components might not yet be available,
+/// so we create all elems ourselves here manually.
+///
+export function InstaDiag(ps: InstaDiagProps): RElm {
+  return r.div({ className: 's_InstaDgW' },
+      r.div({ className: 'modal-backdrop fade in', style: { opacity: 0.5 } }),
+      r.div({ role: 'dialog', className: 'fade in modal',
+            style: { display: 'block' }},
+        r.div({ className: 'modal-dialog dw-server-error ' + (ps.diagClassName || '') },
+          r.div({ className: 'modal-content', role: 'document' },
+            !ps.title ? null : r.div({ className: 'modal-header' },
+              r.h4({ className: 'modal-title ' + (ps.titleClassName || '') },
+                ps.title)),
+            r.div({ className: 'modal-body' },
+              ps.body,
+            !ps.footer ? null : r.div({ className: 'modal-footer' },
+              ps.footer))))));
+}
+
+
 // Facebook logo.
 // Need to follow Facebook's brand guidelines, and use this image for Facebook
 // login and share buttons. [FBBRAND]  Otherwise, when staff at Facebook inspect your

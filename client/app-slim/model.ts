@@ -390,7 +390,8 @@ interface OwnPageNotfPrefs {  // RENAME to MembersPageNotfPrefs?
 }
 
 
-interface Myself extends OwnPageNotfPrefs {
+type Me = Myself
+interface Myself extends OwnPageNotfPrefs {   // RENAME to Me
   dbgSrc?: string;
   id?: UserId;
   isGroup?: boolean; // currently always undefined (i.e. false)
@@ -1100,9 +1101,13 @@ interface MemberIdName {
 }
 
 
-type BriefUser = Participant;  // old name, CLEAN_UP RENAME all occurrences to Participant
+// Store means Store.me: Me. St should be a username.
+type Who = Pat | Me | Store | PatId | St;
 
-interface Participant {   // Guest or Member, and Member = group or user   RENAME to Pat
+type BriefUser = Pat;    // CLEAN_UP RENAME to Pat
+type Participant = Pat;  // RENAME to Pat
+
+interface Pat {   // Guest or Member, and Member = group or user
   id: UserId;
   fullName?: string;
   username?: string;

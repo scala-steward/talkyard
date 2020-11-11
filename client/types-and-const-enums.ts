@@ -41,6 +41,9 @@ type Nr = number;
 type S = string;  // REMOVE
 type St = string;
 
+// Nullish and falsy values.
+type Z = 0 | false | '' | null | undefined | void;  // don't incl [] or {}
+
 type SiteData = any;   // [3SD5PB7]
 
 type PageId = string;
@@ -53,8 +56,9 @@ type CategoryRef = string;
 type SiteId = number;
 type SiteVersion = number;
 type LoginId = String;
-type UserId = number;
-type PeopleId = UserId;
+type UserId = number;     // RENAME to PatId
+type PatId = UserId;
+type PeopleId = UserId;   // REMOVE
 type PermissionId = number;
 type NotificationId = number;
 type ReviewTaskId = number;

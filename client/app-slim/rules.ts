@@ -40,7 +40,7 @@ export function page_isChat(pageRole: PageRole): boolean {
 
 // Hmm now there's a Discussion topic type (= page role), then page_isDiscussion is an a
 // bit confusing name?
-export function page_isDiscussion(pageRole: PageRole): boolean {
+export function page_isDiscussion(pageRole: PageRole | Z): Bo {
   return pageRole && !isSection(pageRole) &&
       pageRole !== PageRole.Form &&
       pageRole !== PageRole.SpecialContent &&
@@ -116,9 +116,12 @@ export function isMember(user: Myself | UserInclDetails): boolean {
   return member;
 }
 
-export function isStaff(user: Myself | BriefUser | UserInclDetails) {
+export function pat_isStaff(user: Me | Pat): Bo {
   return user.isAdmin || user.isModerator;
 }
+
+// Old name
+export const isStaff: (user: Me | Pat) => Bo = pat_isStaff;
 
 export function user_isStaffOrCoreMember(user: Myself | UserInclDetails): boolean {
   return isStaff(user) || user_trustLevel(user) >= TrustLevel.CoreMember;
