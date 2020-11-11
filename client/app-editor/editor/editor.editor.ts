@@ -166,6 +166,11 @@ export const Editor = createFactory<any, EditorState>({
       event.stopPropagation();
       return false;
     }); */
+
+    // https://w3c.github.io/clipboard-apis/#fire-a-clipboard-event
+    // https://w3c.github.io/clipboard-apis/#clipboard-event-paste
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/paste_event
+    // https://www.google.com/search?client=firefox-b-e&q=js+handle+paste
   },
 
   componentDidUpdate: function(prevProps, prevState) {
@@ -327,6 +332,9 @@ export const Editor = createFactory<any, EditorState>({
         const linkHtml = this.makeUploadLink(file, fileUrlPath);
         const perhapsNewline = this.state.text.endsWith('\n') ? '' : '\n';
         this.setState({
+          // https://github.com/webscopeio/react-textarea-autocomplete
+          // react-textarea-autocomplete
+          // onCaretPositionChange 	Function: (number) => void
           text: this.state.text + perhapsNewline + '\n' +
             // (There's a sanitizer for this — for everything in the editor.)
             "<!-- Uploaded file name:  " + file.name + "  -->\n" +
