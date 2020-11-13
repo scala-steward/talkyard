@@ -159,6 +159,11 @@ export const Editor = createFactory<any, EditorState>({
     this.initUploadFileStuff();
     this.perhapsShowGuidelineModal();
     window.addEventListener('unload', this.saveDraftUseBeacon);
+
+    // We'll process Ctrl+V upload file events, regargless of what's in focus.
+    // And maybe show a tips if pat focuses the obviously wrong thing? See onPaste().
+    window.addEventListener('paste', this.onPaste, false);
+
     // Don't scroll the main discussion area, when scrolling inside the editor.
     /* Oops this breaks scrolling in the editor and preview.
     $(this.refs.editor).on('scroll touchmove mousewheel', function(event) {
@@ -166,11 +171,6 @@ export const Editor = createFactory<any, EditorState>({
       event.stopPropagation();
       return false;
     }); */
-
-    // https://w3c.github.io/clipboard-apis/#fire-a-clipboard-event
-    // https://w3c.github.io/clipboard-apis/#clipboard-event-paste
-    // https://developer.mozilla.org/en-US/docs/Web/API/Element/paste_event
-    // https://www.google.com/search?client=firefox-b-e&q=js+handle+paste
   },
 
   componentDidUpdate: function(prevProps, prevState) {
@@ -187,6 +187,7 @@ export const Editor = createFactory<any, EditorState>({
     this.isGone = true;
     logD("Editor: componentWillUnmount");
     window.removeEventListener('unload', this.saveDraftUseBeacon);
+    window.removeEventListener('paste', this.onPaste);
     this.saveDraftNow();
   },
 
@@ -226,6 +227,34 @@ export const Editor = createFactory<any, EditorState>({
     this.refs.uploadFileInput.click();
   },
 
+  onPaste: function(event: ClipboardEvent) {
+    logD(`paste event: ${JSON.stringify(event)}`);
+    const clipboardData: DataTransfer | Nl = event.clipboardData;
+    logD(`clipboardData: ${JSON.stringify(clipboardData)}`);
+    const files: FileList | Z = clipboardData?.files;
+    logD(`files?.length: ${files?.length}`);
+
+    // (There's also DataTransfer.items — not supported yet though, in Safari,
+    // as of Safari 14 and iOS Safari 14, November 2020.
+    // And there's a dataTransfer field at least in FF and Chrome, 10 years ago,
+    // e.g.: https://bugs.chromium.org/p/chromium/issues/detail?id=31037,
+    // but I cannot find it mentioned in any more recent resources,
+    // and I don't see it in Chrome 86 Dev Tools — only clipboardData.
+    // Seems it was the same as the clipboardData field.)
+
+    // COULD: If event.target is the obviosly wrong thing, e.g. the search
+    // box input field, then, ignore this paste event?  Maybe show
+    // a tips about clicking in the editor to focus it, before pasting?
+    // But for now:
+    this.uploadAnyFiles(files);
+
+    // https://w3c.github.io/clipboard-apis/#fire-a-clipboard-event
+    // https://w3c.github.io/clipboard-apis/#clipboard-event-paste
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/paste_event
+    // https://www.google.com/search?client=firefox-b-e&q=js+handle+paste
+
+  },
+
   // We never un-initialize this, instead we reuse the same editor instance always once created.
   initUploadFileStuff: function() {
     if (!this.refs.uploadFileInput)
@@ -246,25 +275,26 @@ export const Editor = createFactory<any, EditorState>({
       event.preventDefault();
       if (this.isGone || !this.state.visible) return;
       FileAPI.getDropFiles(event, (files: File[]) => {
-        if (files.length > 1) {
-          // This'll log a warning server side, I think I want that (want to know how
-          // often this happens)   [edit: should be info log msg, not warning]
-          die(t.e.UploadMaxOneFile + " [TyM5JYW2]");  // INFO_LOG
-        }
-        this.uploadFiles(files);
+        this.uploadAnyFiles(files);
       });
     });
 
     const inputElem = this.refs.uploadFileInput;
     FileAPI.event.on(inputElem, 'change', (event) => {
       const files = FileAPI.getFiles(event);
-      this.uploadFiles(files);
+      this.uploadAnyFiles(files);
     });
   },
 
-  uploadFiles: function(files: File[]) {
-    if (!files.length)
+  uploadAnyFiles: function(files: File[]) {
+    if (!files || !files.length)
       return;
+
+    if (files.length >= 2) {
+      // This'll log a warning server side, I think I want that (want to know how
+      // often this happens)   [edit: should be info log msg, not warning]
+      die(t.e.UploadMaxOneFile + " [TyM5JYW2]");  // INFO_LOG
+    }
 
     for (let file of files) {
       const size = file.size;
