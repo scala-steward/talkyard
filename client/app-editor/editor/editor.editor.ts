@@ -162,7 +162,12 @@ export const Editor = createFactory<any, EditorState>({
 
     // We'll process Ctrl+V upload file events, regargless of what's in focus.
     // And maybe show a tips if pat focuses the obviously wrong thing? See onPaste().
-    window.addEventListener('paste', this.onPaste, false);
+    // or add to window?
+    setTimeout(() => {
+      logM(`NOW: textareaElm.addEventListener('paste', this.onPaste, false);`);
+      const textareaElm = $first('textarea.rta__textarea');
+      textareaElm.addEventListener('paste', this.onPaste, false);
+    }, 2000);  // just for now
 
     // Don't scroll the main discussion area, when scrolling inside the editor.
     /* Oops this breaks scrolling in the editor and preview.
@@ -187,7 +192,7 @@ export const Editor = createFactory<any, EditorState>({
     this.isGone = true;
     logD("Editor: componentWillUnmount");
     window.removeEventListener('unload', this.saveDraftUseBeacon);
-    window.removeEventListener('paste', this.onPaste);
+    window.removeEventListener('paste', this.onPaste);  // rm from texatarea instead
     this.saveDraftNow();
   },
 
@@ -270,6 +275,30 @@ export const Editor = createFactory<any, EditorState>({
       event.preventDefault();
       event.stopPropagation();
     });
+
+    /*
+    FileAPI.event.on(document, 'paste', (event: ClipboardEvent) => {
+
+      logD(`FileAPI: paste event: ${JSON.stringify(event)}`);
+      const clipboardData: DataTransfer | Nl = event.clipboardData;
+      logD(`FileAPI: clipboardData: ${JSON.stringify(clipboardData)}`);
+      const files: FileList | Z = clipboardData?.files;
+      logD(`FileAPI: files?.length: ${files?.length}`);
+
+      // (There's also DataTransfer.items — not supported yet though, in Safari,
+      // as of Safari 14 and iOS Safari 14, November 2020.
+      // And there's a dataTransfer field at least in FF and Chrome, 10 years ago,
+      // e.g.: https://bugs.chromium.org/p/chromium/issues/detail?id=31037,
+      // but I cannot find it mentioned in any more recent resources,
+      // and I don't see it in Chrome 86 Dev Tools — only clipboardData.
+      // Seems it was the same as the clipboardData field.)
+
+      // COULD: If event.target is the obviosly wrong thing, e.g. the search
+      // box input field, then, ignore this paste event?  Maybe show
+      // a tips about clicking in the editor to focus it, before pasting?
+      // But for now:
+      this.uploadAnyFiles(files);
+    }); */
 
     FileAPI.event.on(document, 'drop', (event: Event) => {
       event.preventDefault();

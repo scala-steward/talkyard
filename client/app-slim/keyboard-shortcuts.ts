@@ -63,6 +63,15 @@
 //   onLeft onRight onUp onDown onEnter onTab onShiftTab   onDel
 //
 //   or   onX(fn),  onX(fn, false) to bind and unbind.
+//
+// Or not needed? The editor instead:
+//
+//    onKeyPress: this.onKeyPressOrKeyDown,
+//    onKeyDown: this.onKeyPressOrKeyDown,
+//    if (event_isCtrlEnter(event)) ...
+//
+// then no need to bind & unbind.
+// So Keymaster only 1 2 3 4  w s,   Can remove now, right?
 
 
 //------------------------------------------------------------------------------
