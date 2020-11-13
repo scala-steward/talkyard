@@ -25,6 +25,14 @@
 #
 watch: watch-debug_asset_bundles
 watch-debug_asset_bundles:
+	@if [ -z "`which  inotifywait`" ]; then \
+	  echo "" ;\
+	  echo "Please install inotifywait. Like this, in Debian and Ubuntu Linux:"  ;\
+	  echo "" ;\
+	  echo "    apt install inotify-tools" ;\
+	  echo "" ;\
+	  exit 1  ;\
+	fi
 	while true; do \
 	  make debug_asset_bundles ;\
 	  inotifywait -q -r -e modify -e create -e delete -e move \

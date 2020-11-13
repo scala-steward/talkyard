@@ -215,6 +215,13 @@ if (mainCmd === 'u' || mainCmd === 'watchup') {
   spawnInForeground('docker-compose run --rm nodejs yarn install');
   spawnInForeground('make debug_asset_bundles');
 
+  const whichInotifyExitCode = spawnInForeground('which  inotifywait');
+  if (whichInotifyExitCode !== 0) {
+    logMessage("\nPlease install inotifywait. Like this, in Debian and Ubuntu Linux:\n\n" +
+        "    apt install inotify-tools\n");
+    process.exit(1);
+  }
+
   // Run `up -d` in foreground, so we won't start the `logs -f` process too soon
   // — that process would exit, if `up -d` hasn't yet started any containers.
   spawnInForeground('docker-compose up -d');
