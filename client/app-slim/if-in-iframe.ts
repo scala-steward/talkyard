@@ -124,9 +124,9 @@ function onMessage(event) {
       // makeUpdNoCookiesTempSessionIdFn() or in the 'case:' just above, lets check:
       // @ifdef DEBUG
       const mainWin: MainWin = getMainWin();
-      if (!mainWin.typs.weakSessionId && !getSetCookie('dwCoSid')) {
+      if (!me_hasSid()) {
         logAndDebugDie(`justLoggedIn but not logged in? ` +
-            `No cookie, no typs.weakSessionId. ` +
+            `No session cookie, no typs.weakSessionId. ` +
             `This frame name: ${window.name}, ` +
             `main frame name: ${mainWin.name}, ` +
             `this is main frame: ${window === mainWin}, ` +
@@ -137,6 +137,9 @@ function onMessage(event) {
       dieIf(!eventData.user, 'justLoggedIn but user missing [TyE406MR4E3]');
       // @endif
       ReactActions.setNewMe(eventData.user);
+      break;
+    case 'logoutServerAndClientSide':
+      Server.logoutServerAndClientSide();
       break;
     case 'logoutClientSideOnly':
       // Sent from the comments iframe one logged out in, to the editor iframe

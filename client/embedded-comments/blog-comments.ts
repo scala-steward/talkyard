@@ -209,6 +209,7 @@ let tempObjStorage;
 // so need try-catch.
 try {
   someStorage = localStorage;
+  window.addEventListener('storage', onLocalStorageChanged);
 }
 catch {
 }
@@ -234,6 +235,23 @@ const theStorage: Storage = someStorage || {
   },
 } as Storage;
 
+
+let curSessItemInStorage: St | Nl = null;
+
+function onLocalStorageChanged() {
+  // Maybe we logged out in another browser tab?
+  const maybeNewSessItem: St | Nl = theStorage.getItem('talkyardSession');
+  if (curSessItemInStorage !== maybeNewSessItem) {
+    if (maybeNewSessItem) {
+      sendToComments(['resumeWeakSession', maybeNewSessItem]);
+    }
+    else {
+      sendToComments(['logoutServerAndClientSide', null]);
+      sendToEditor(['logoutClientSideOnly', null]);
+    }
+    curSessItemInStorage = maybeNewSessItem;
+  }
+}
 
 
 addEventListener('scroll', messageCommentsIframeNewWinTopSize);
@@ -821,6 +839,7 @@ function onMessage(event) {
         try {
           sessionStr = theStorage.getItem('talkyardSession');
           theStorage.removeItem('talkyardSession');  // see above (3548236)
+          curSessItemInStorage = null;
         }
         catch (ex) {
           logW(`Error getting 'talkyardSession' from theStorage [TyEGETWKSID]`, ex);
@@ -917,7 +936,8 @@ function onMessage(event) {
           // This re-inserts our session (3548236), if we just sent a 'resumeWeakSession'
           // message to the iframe and then removed it from theStorage  — because
           // the comments iframe sends back 'justLoggedIn', after having logged in.
-          theStorage.setItem('talkyardSession', JSON.stringify(item));
+          curSessItemInStorage = JSON.stringify(item)
+          theStorage.setItem('talkyardSession', curSessItemInStorage);
         }
       }
       catch (ex) {
@@ -930,6 +950,7 @@ function onMessage(event) {
       logM(`Logged out`);
       try {
         theStorage.removeItem('talkyardSession');
+        curSessItemInStorage = null;
       }
       catch (ex) {
         logW(`Error removing 'talkyardSession' from  theStorage [TyERMWKSID]`, ex);
