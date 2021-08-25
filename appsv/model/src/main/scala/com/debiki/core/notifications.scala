@@ -213,28 +213,38 @@ object NotfLevel {
     * notification levels here. Instead, make it possible to subscribe for notifications
     * on individual posts, and sub-threads, in addition to on whole pages / categories / tags.
     * This could be a power user feature in the More... post action dropdown.
+    *
+    * So, what you get notified about (e.g. a specific reply, or the whole page),
+    * and the notification level, are two different settings.
+    * Example: Set the highest notification level — that is, RepliesAndEdits —
+    * for a specific post only, not child posts (replies), and you'd get
+    * notified about edits of that post only. Could be useful if you want to
+    * see if a page gets edited (the page body, orig post), but you don't want
+    * reply notifications.
     */
-  case object EveryPostAllEdits extends NotfLevel(9)
+  case object EveryPostAllEdits extends NotfLevel(9)  ; RENAME // to RepliesAndEdits
 
   /** Notified about every new post (incl topic status changes).
     */
-  case object WatchingAll extends NotfLevel(8)    ; RENAME // to EveryPost
+  case object WatchingAll extends NotfLevel(8)    ; RENAME // to EveryPost, no, to NewReplies
+                                              // or to  RepliesAndStatusChanges? but
+                                              // that's too long? "NewPosts" better?
 
   /** For questions: Notified about new answers suggestions (that is. orig post replies).
     * For questions, problems, ideas: Notified about progress posts and status changes,
     * e.g. status changed from Planned to Doing.
     */
-  case object TopicProgress extends NotfLevel(7)
+  case object TopicProgress extends NotfLevel(7)  ; RENAME // to PageStatusChanges
 
   /** Notified if an answer to a Question topic, is accepted as the correct answer.
     * Or if a Problem is marked as solved. Or an Idea marked as Implemented.
     * Or if topic closed (won't get solved / done).
     */
-  case object TopicSolved extends NotfLevel(6)
+  case object TopicSolved extends NotfLevel(6)   ; RENAME // to PageSolved?
 
   /** Notified about new topics. (For categories.)
     */
-  case object WatchingFirst extends NotfLevel(5)  ; RENAME // to NewTopics
+  case object WatchingFirst extends NotfLevel(5)  ; RENAME // to NewPages
 
   /** Like Normal, plus highlights the topic in the topic list, if new posts.
     */
@@ -276,6 +286,10 @@ object NotfLevel {
     case _ => return None
   })
 
+  def fromSt_apiV0(value: St): Opt[NotfLevel] = Some(value match {
+    case "NewReplies" => WatchingAll
+    case _ => return None
+  })
 }
 
 
