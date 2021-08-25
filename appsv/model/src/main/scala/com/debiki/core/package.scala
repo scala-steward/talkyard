@@ -217,18 +217,40 @@ package object core {
   // ext ids, could estimate the number of people in the organization.)
   type ExtId = String
 
-  type Ref = String  ; RENAME // to RefStr(ing) or RawRef? maybe rename ParsedRef to just Ref?
+  type Ref = String  ; RENAME // to RefSt(ring) or RawRef? maybe rename ParsedRef to just Ref?
 
-  sealed abstract class ParsedRef(val canOnlyBeToParticipant: Boolean = false)
+  sealed trait PatRef
+
+  sealed abstract class ParsedRef(
+    val canBeToPat: Bo = true,
+    val canOnlyBeToPat: Bo = false)
+
   object ParsedRef {
-    case class ExternalId(value: ExtId) extends ParsedRef
-    case class SingleSignOnId(value: String) extends ParsedRef(true)
-    case class TalkyardId(value: String) extends ParsedRef
-    case class Username(value: String) extends ParsedRef(true)
+    case class ExternalId(value: ExtId)
+      extends ParsedRef with PatRef
+
+    case class SingleSignOnId(value: St)
+      extends ParsedRef(canOnlyBeToPat = true) with PatRef
+
+    case class TalkyardId(value: St)
+      extends ParsedRef with PatRef
+
+    case class Username(value: St)
+      extends ParsedRef(canOnlyBeToPat = true) with PatRef
 
     // Maybe trait PageLookupId { def lookupId: St }  —>  "diid:..." or "https://..." ?
-    case class DiscussionId(diid: St) extends ParsedRef
-    case class EmbeddingUrl(url: St) extends ParsedRef
+    case class DiscussionId(diid: St)
+      extends ParsedRef(canBeToPat = false)
+
+    case class EmbeddingUrl(url: St)
+      extends ParsedRef(canBeToPat = false)
+  }
+
+  def parsePatRef(ref: Ref): PatRef Or ErrMsg = {
+    parseRef(ref, allowParticipantRef = true) map { parsedRef =>
+      if (!parsedRef.canBeToPat) return Bad(s"Not a participant ref: $ref")
+      parsedRef.asInstanceOf[PatRef]
+    }
   }
 
   def parseRef(ref: Ref, allowParticipantRef: Boolean): ParsedRef Or ErrMsg = {
