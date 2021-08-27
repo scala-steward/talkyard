@@ -856,7 +856,11 @@ interface Action {
   doHow: Object;  // per action type parameters
 }
 
-type ActionType = 'SetVote' | 'SetNotfLevel';
+type ActionType =
+  'CreateReplyPost' |
+  'CreateMetaPost' |
+  'SetVote' |
+  'SetNotfLevel';
 
 
 interface SetVoteAction extends Action {
@@ -875,6 +879,26 @@ interface SetNotfLevelAction extends Action {
     whatPages: { pageId: St } | { inCategoryId: CatId };
   }
 }
+
+interface CreateReplyPostAction extends Action {
+  doWhat: 'CreateReplyPost';
+  doHow: {
+    replyTo: { pageId: PageId, postNr?: PostNr } | { postId: PostId };
+    text: St;
+    textFormat: 'CommonMark';
+  }
+}
+
+interface CreateMetaPostAction extends Action {
+  doWhat: 'CreateMetaPost';
+  doHow: {
+    appendTo: { pageId: PageId };
+    text: St;
+    textFormat: 'CommonMark';
+  }
+}
+
+
 
 // Example Do API request:
 //
@@ -895,6 +919,22 @@ interface SetNotfLevelAction extends Action {
 //      doHow: {
 //        whatLevel: 'EveryPost',
 //        whatPage: { pageId: _ },
+//      }
+//    }, {
+//      asWho: 'ssoid:some-user-id',
+//      doWhat: 'CreateMetaPost',
+//      doHow: {
+//        text: _,
+//        textFormat: 'CommonMark',
+//        appendTo: { pageId: _ },
+//      }
+//    }, {
+//      asWho: 'ssoid:some-user-id',
+//      doWhat: 'CreateReplyPost',
+//      doHow: {
+//        text: _,
+//        textFormat: 'CommonMark',
+//        replyTo: { pageId: _, postNr: _ },
 //      }
 //    }, {
 //      asWho: _
