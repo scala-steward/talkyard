@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.debiki.core.QuickMessageException
-import com.debiki.core.fileExists
+import com.debiki.core._
 import com.debiki.core.Prelude._
 import debiki.Globals
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, JsObject}
 import play.api.mvc.Result
 
 
@@ -31,6 +30,9 @@ package object controllers {
 
   def OkPrettyJson(json: JsValue): Result =
     Utils.OkApiJson(json, pretty = true)
+
+  def OkSafeApiJson(jOb: JsObject, pretty: Bo = false): Result =
+    Utils.OkApiJson(jOb, pretty)
 
   def OkApiJson(json: JsValue, pretty: Boolean = false): Result =
     Utils.OkApiJson(json, pretty)
