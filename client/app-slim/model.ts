@@ -1653,6 +1653,8 @@ interface StorePatch extends EditorStorePatch {
 
   // If pat created a new tag type.
   newTagType?: TagType;
+  tagTypes?: TagType[];
+  tagTypeStats?;
 
   // Some pages get created lazily, namely embedded comments pages. They get
   // created when someone posts the first comment, or posts the first Like vote,
