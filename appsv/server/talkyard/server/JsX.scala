@@ -666,6 +666,15 @@ object JsX {   RENAME // to JsonPaSe
   }
 
 
+  def JsTagStats(stats: TagTypeStats): JsObject = {
+    Json.obj(
+        "tagTypeId" -> stats.tagTypeId,
+        "numTotal" -> JsNumber(stats.numTotal),
+        "numPostTags" -> JsNumber(stats.numPostTags),
+        "numPatBadges" -> JsNumber(stats.numPatBadges))
+  }
+
+
   def JsPagePath(pagePath: PagePath): JsValue =
     Json.obj(  // dupl code (4AKBS03)
       "value" -> pagePath.value,
